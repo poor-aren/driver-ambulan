@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ambulans Tracker Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #80deea, #4dd0e1);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 12px;
+      width: 100%;
+      background-color: #00796B;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #004d40;
+    }
+    #tracker {
+      display: none;
+    }
+    .status {
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card" id="login">
+    <h2>Login Driver 🚑</h2>
+    <input type="text" id="username" placeholder="Username (contoh: driver)">
+    <input type="password" id="password" placeholder="Password (contoh: 1234)">
+    <button onclick="login()">Login</button>
+    <div id="loginError" style="color: red; display: none;">Username atau Password salah!</div>
+  </div>
+
+  <div class="card" id="tracker">
+    <h2>Ambulans GPS Aktif</h2>
+    <div class="status" id="status">GPS: Nonaktif</div>
+    <div class="status" id="coords">Latitude: -, Longitude: -</div>
+    <button id="toggleBtn">Aktifkan GPS</button>
+  </div>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script>
+    function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      if (username === 'driver' && password === '1234') {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('tracker').style.display = 'block';
+        console.log("✅ Login berhasil");
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        console.log("❌ Login gagal");
+      }
+    }
+
+    const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+    const topic = 'ajuz/iot/seulanga';
+
+    client.on('connect', () => {
+      console.log('✅ MQTT Connected');
+    });
+
+    client.on('error', (err) => {
+      console.error('❌ MQTT Error:', err);
+    });
+
+    let active = false;
+    let watchId = null;
+    let intervalId = null;
+    let currentPosition = null;
+
+    const btn = document.getElementById('toggleBtn');
+    const status = document.getElementById('status');
+    const coords = document.getElementById('coords');
+
+    btn.onclick = () => {
+      active = !active;
+      status.textContent = "GPS: " + (active ? "Aktif" : "Nonaktif");
+      btn.textContent = active ? "Nonaktifkan GPS" : "Aktifkan GPS";
+
+      if (active) {
+        if (navigator.geolocation) {
+          watchId = navigator.geolocation.watchPosition(pos => {
+            currentPosition = {
+              lat: pos.coords.latitude,
+              lon: pos.coords.longitude
+            };
+            coords.textContent = `Latitude: ${currentPosition.lat.toFixed(6)}, Longitude: ${currentPosition.lon.toFixed(6)}`;
+          }, err => {
+            coords.textContent = "Error: " + err.message;
+            console.error("❌ Geolocation error:", err);
+          });
+
+          intervalId = setInterval(() => {
+            if (currentPosition) {
+              const payload = JSON.stringify(currentPosition);
+              client.publish(topic, payload);
+              console.log("📡 Data terkirim:", payload);
+            }
+          }, 1000);
+
+        } else {
+          coords.textContent = "Geolocation tidak didukung.";
+          console.warn("⚠️ Geolocation tidak tersedia.");
+        }
+      } else {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+          watchId = null;
+        }
+        if (intervalId !== null) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+        currentPosition = null;
+        coords.textContent = "Latitude: -, Longitude: -";
+      }
+    };
+  </script>
+</body>
+</html>
