@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Ambulans Tracker Login</title>
+  <title>Ambulans Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * {
@@ -10,7 +10,7 @@
     }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #80deea, #4dd0e1);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       margin: 0;
       padding: 0;
       display: flex;
@@ -19,90 +19,350 @@
       justify-content: center;
     }
     .card {
-      background: white;
+      background: rgba(255,255,255,0.95);
       padding: 30px;
       border-radius: 20px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
       text-align: center;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .login-title {
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 24px;
+      font-weight: 600;
     }
     input {
       width: 100%;
-      padding: 12px;
+      padding: 15px;
       margin: 10px 0;
-      border-radius: 10px;
-      border: 1px solid #ccc;
+      border-radius: 12px;
+      border: 2px solid #e0e0e0;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 10px rgba(102,126,234,0.3);
     }
     button {
-      padding: 12px;
+      padding: 15px;
       width: 100%;
-      background-color: #00796B;
+      background: linear-gradient(45deg, #667eea, #764ba2);
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 16px;
-      margin-top: 10px;
+      font-weight: 600;
+      margin-top: 15px;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
     button:hover {
-      background-color: #004d40;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    }
+    button:active {
+      transform: translateY(0);
     }
     #tracker {
       display: none;
     }
     .status {
       margin: 15px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.05);
+    }
+    .coords {
+      font-size: 12px;
+      color: #666;
+      word-break: break-all;
+    }
+    .error {
+      color: #e74c3c;
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(231,76,60,0.1);
+      border-radius: 8px;
+    }
+    
+    /* LED Indicator */
+    .led-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+      gap: 15px;
+    }
+    .led {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 3px solid #333;
+      position: relative;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    }
+    .led-red {
+      background: #ff4757;
+      box-shadow: 0 0 20px #ff4757, inset 0 0 10px rgba(0,0,0,0.3);
+    }
+    .led-green {
+      background: #2ed573;
+      box-shadow: 0 0 20px #2ed573, inset 0 0 10px rgba(0,0,0,0.3);
+    }
+    .led-off {
+      background: #444;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+    .led-label {
+      font-size: 12px;
+      color: #333;
+      margin-top: 5px;
+      font-weight: 500;
+    }
+    .ambulance-icon {
+      font-size: 48px;
+      margin: 10px 0;
+    }
+    .connection-status {
+      font-size: 12px;
+      color: #27ae60;
+      margin: 10px 0;
+    }
+    .connection-status.disconnected {
+      color: #e74c3c;
+    }
+    
+    /* Console Log Styles */
+    .console-container {
+      margin: 20px 0;
+      background: #1a1a1a;
+      border-radius: 10px;
+      padding: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      border: 1px solid #333;
+    }
+    .console-entry {
+      margin: 3px 0;
+      padding: 2px 5px;
+      border-radius: 3px;
+      word-wrap: break-word;
+    }
+    .log-success {
+      color: #2ecc71;
+      background: rgba(46,204,113,0.1);
+    }
+    .log-error {
+      color: #e74c3c;
+      background: rgba(231,76,60,0.1);
+    }
+    .log-info {
+      color: #3498db;
+      background: rgba(52,152,219,0.1);
+    }
+    .log-warning {
+      color: #f39c12;
+      background: rgba(243,156,18,0.1);
+    }
+    .log-data {
+      color: #9b59b6;
+      background: rgba(155,89,182,0.1);
+    }
+    .console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .console-title {
+      color: #ecf0f1;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .clear-btn {
+      background: #34495e;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .clear-btn:hover {
+      background: #2c3e50;
+      transform: none;
+      box-shadow: none;
     }
   </style>
 </head>
 <body>
 
   <div class="card" id="login">
-    <h2>Login Driver 🚑</h2>
-    <input type="text" id="username" placeholder="Username (contoh: driver)">
-    <input type="password" id="password" placeholder="Password (contoh: 1234)">
-    <button onclick="login()">Login</button>
-    <div id="loginError" style="color: red; display: none;">Username atau Password salah!</div>
+    <div class="ambulance-icon">🚑</div>
+    <h2 class="login-title">Driver Ambulans</h2>
+    <input type="text" id="username" placeholder="Masukkan Username">
+    <input type="password" id="password" placeholder="Masukkan Password">
+    <button onclick="login()">LOGIN</button>
+    <div id="loginError" class="error">Username atau Password salah!</div>
   </div>
 
   <div class="card" id="tracker">
-    <h2>Ambulans GPS Aktif</h2>
+    <div class="ambulance-icon">🚑</div>
+    <h2>GPS Tracker Aktif</h2>
+    
+    <div class="connection-status" id="mqttStatus">MQTT: Menghubungkan...</div>
+    
+    <div class="led-container">
+      <div>
+        <div class="led led-off" id="ledRed"></div>
+        <div class="led-label">JAUH</div>
+      </div>
+      <div>
+        <div class="led led-off" id="ledGreen"></div>
+        <div class="led-label">DEKAT</div>
+      </div>
+    </div>
+    
     <div class="status" id="status">GPS: Nonaktif</div>
-    <div class="status" id="coords">Latitude: -, Longitude: -</div>
-    <button id="toggleBtn">Aktifkan GPS</button>
+    <div class="status coords" id="coords">Menunggu koordinat GPS...</div>
+    <div class="status" id="distance">Jarak: Belum diketahui</div>
+    
+    <div class="console-container">
+      <div class="console-header">
+        <div class="console-title">📋 Console Log</div>
+        <button class="clear-btn" onclick="clearConsole()">Clear</button>
+      </div>
+      <div id="consoleLog">
+        <div class="console-entry log-info">[SYSTEM] Ambulans tracker siap digunakan...</div>
+      </div>
+    </div>
+    
+    <button id="toggleBtn">🛰️ AKTIFKAN GPS</button>
   </div>
 
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <script>
+    // Console Log Functions
+    function addConsoleLog(message, type = 'info') {
+      const consoleLog = document.getElementById('consoleLog');
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = `console-entry log-${type}`;
+      entry.textContent = `[${timestamp}] ${message}`;
+      
+      consoleLog.appendChild(entry);
+      consoleLog.scrollTop = consoleLog.scrollHeight;
+      
+      // Keep only last 50 entries
+      const entries = consoleLog.querySelectorAll('.console-entry');
+      if (entries.length > 50) {
+        entries[0].remove();
+      }
+    }
+    
+    function clearConsole() {
+      document.getElementById('consoleLog').innerHTML = 
+        '<div class="console-entry log-info">[SYSTEM] Console log cleared...</div>';
+    }
+    
     function login() {
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
+      
+      addConsoleLog(`LOGIN: Attempting login for user: ${username}`, 'info');
+      
       if (username === 'driver' && password === '1234') {
         document.getElementById('login').style.display = 'none';
         document.getElementById('tracker').style.display = 'block';
+        addConsoleLog("LOGIN: Login successful! Welcome driver 🚑", 'success');
+        addConsoleLog("SYSTEM: Ambulans tracker interface loaded", 'info');
         console.log("✅ Login berhasil");
       } else {
         document.getElementById('loginError').style.display = 'block';
+        addConsoleLog("LOGIN: Invalid credentials provided", 'error');
+        setTimeout(() => {
+          document.getElementById('loginError').style.display = 'none';
+        }, 3000);
         console.log("❌ Login gagal");
       }
     }
 
     const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
     const topic = 'ajuz/iot/seulanga';
+    const statusTopic = 'ajuz/iot/status';
 
     client.on('connect', () => {
       console.log('✅ MQTT Connected');
+      document.getElementById('mqttStatus').textContent = 'MQTT: Terhubung ✅';
+      document.getElementById('mqttStatus').className = 'connection-status';
+      addConsoleLog("MQTT: Connected to broker.emqx.io", 'success');
+      
+      // Subscribe untuk menerima status jarak dari Raspberry Pi
+      client.subscribe(statusTopic);
+      addConsoleLog(`MQTT: Subscribed to topic: ${statusTopic}`, 'info');
     });
 
     client.on('error', (err) => {
       console.error('❌ MQTT Error:', err);
+      document.getElementById('mqttStatus').textContent = 'MQTT: Terputus ❌';
+      document.getElementById('mqttStatus').className = 'connection-status disconnected';
+      addConsoleLog(`MQTT: Connection error - ${err.message}`, 'error');
+    });
+
+    client.on('offline', () => {
+      addConsoleLog("MQTT: Connection offline", 'warning');
+    });
+
+    client.on('reconnect', () => {
+      addConsoleLog("MQTT: Attempting to reconnect...", 'warning');
+    });
+
+    // Terima status dari Raspberry Pi
+    client.on('message', (topic, message) => {
+      if (topic === statusTopic) {
+        try {
+          const data = JSON.parse(message.toString());
+          const distance = data.distance;
+          const status = data.status;
+          const direction = data.direction;
+          const bearing = data.bearing;
+          
+          document.getElementById('distance').textContent = `Jarak: ${distance.toFixed(2)} meter`;
+          
+          const ledRed = document.getElementById('ledRed');
+          const ledGreen = document.getElementById('ledGreen');
+          
+          if (status === 'near') {
+            ledRed.className = 'led led-off';
+            ledGreen.className = 'led led-green';
+            addConsoleLog(`STATUS: DEKAT! Jarak ${distance.toFixed(2)}m, Arah: ${direction} (${bearing.toFixed(1)}°)`, 'success');
+          } else {
+            ledRed.className = 'led led-red';
+            ledGreen.className = 'led led-off';
+            addConsoleLog(`STATUS: Jauh - ${distance.toFixed(2)}m, Arah: ${direction} (${bearing.toFixed(1)}°)`, 'info');
+          }
+        } catch (e) {
+          console.error('Error parsing status:', e);
+          addConsoleLog(`ERROR: Failed to parse status data`, 'error');
+        }
+      }
     });
 
     let active = false;
     let watchId = null;
     let intervalId = null;
     let currentPosition = null;
+    let dataCount = 0;
 
     const btn = document.getElementById('toggleBtn');
     const status = document.getElementById('status');
@@ -110,35 +370,53 @@
 
     btn.onclick = () => {
       active = !active;
-      status.textContent = "GPS: " + (active ? "Aktif" : "Nonaktif");
-      btn.textContent = active ? "Nonaktifkan GPS" : "Aktifkan GPS";
+      status.textContent = "GPS: " + (active ? "🟢 Aktif" : "🔴 Nonaktif");
+      btn.textContent = active ? "🛑 NONAKTIFKAN GPS" : "🛰️ AKTIFKAN GPS";
+      btn.style.background = active ? 
+        "linear-gradient(45deg, #e74c3c, #c0392b)" : 
+        "linear-gradient(45deg, #667eea, #764ba2)";
 
       if (active) {
+        addConsoleLog("GPS: Starting GPS tracking...", 'info');
+        dataCount = 0;
+        
         if (navigator.geolocation) {
           watchId = navigator.geolocation.watchPosition(pos => {
             currentPosition = {
               lat: pos.coords.latitude,
-              lon: pos.coords.longitude
+              lon: pos.coords.longitude,
+              timestamp: new Date().toISOString()
             };
-            coords.textContent = `Latitude: ${currentPosition.lat.toFixed(6)}, Longitude: ${currentPosition.lon.toFixed(6)}`;
+            coords.textContent = `📍 Lat: ${currentPosition.lat.toFixed(6)}, Lon: ${currentPosition.lon.toFixed(6)}`;
+            addConsoleLog(`GPS: Location acquired - Accuracy: ±${pos.coords.accuracy.toFixed(0)}m`, 'success');
           }, err => {
-            coords.textContent = "Error: " + err.message;
+            coords.textContent = "❌ Error: " + err.message;
+            addConsoleLog(`GPS: Error - ${err.message}`, 'error');
             console.error("❌ Geolocation error:", err);
+          }, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 1000
           });
-
+          
           intervalId = setInterval(() => {
             if (currentPosition) {
               const payload = JSON.stringify(currentPosition);
               client.publish(topic, payload);
+              dataCount++;
+              addConsoleLog(`DATA: Sent #${dataCount} - Lat: ${currentPosition.lat.toFixed(6)}, Lon: ${currentPosition.lon.toFixed(6)}`, 'data');
               console.log("📡 Data terkirim:", payload);
             }
           }, 1000);
 
         } else {
-          coords.textContent = "Geolocation tidak didukung.";
+          coords.textContent = "❌ Geolocation tidak didukung.";
+          addConsoleLog("GPS: Geolocation not supported by this browser", 'error');
           console.warn("⚠️ Geolocation tidak tersedia.");
         }
       } else {
+        addConsoleLog("GPS: Stopping GPS tracking...", 'warning');
+        
         if (watchId !== null) {
           navigator.geolocation.clearWatch(watchId);
           watchId = null;
@@ -148,9 +426,26 @@
           intervalId = null;
         }
         currentPosition = null;
-        coords.textContent = "Latitude: -, Longitude: -";
+        coords.textContent = "📍 Menunggu koordinat GPS...";
+        document.getElementById('distance').textContent = "Jarak: Belum diketahui";
+        
+        // Reset LED
+        document.getElementById('ledRed').className = 'led led-off';
+        document.getElementById('ledGreen').className = 'led led-off';
+        
+        addConsoleLog(`GPS: Stopped. Total data sent: ${dataCount}`, 'info');
       }
     };
+
+    // Enter key untuk login
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && document.getElementById('login').style.display !== 'none') {
+        login();
+      }
+    });
+    
+    // Initial log
+    addConsoleLog("SYSTEM: Ambulans GPS Tracker initialized", 'info');
   </script>
 </body>
 </html>
