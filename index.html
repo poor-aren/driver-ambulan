@@ -1,451 +1,837 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Ambulans Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      height: 100vh;
-      align-items: center;
-      justify-content: center;
-    }
-    .card {
-      background: rgba(255,255,255,0.95);
-      padding: 30px;
-      border-radius: 20px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      backdrop-filter: blur(10px);
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .login-title {
-      color: #333;
-      margin-bottom: 30px;
-      font-size: 24px;
-      font-weight: 600;
-    }
-    input {
-      width: 100%;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 12px;
-      border: 2px solid #e0e0e0;
-      font-size: 16px;
-      transition: all 0.3s ease;
-    }
-    input:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 10px rgba(102,126,234,0.3);
-    }
-    button {
-      padding: 15px;
-      width: 100%;
-      background: linear-gradient(45deg, #667eea, #764ba2);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      margin-top: 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102,126,234,0.4);
-    }
-    button:active {
-      transform: translateY(0);
-    }
-    #tracker {
-      display: none;
-    }
-    .status {
-      margin: 15px 0;
-      padding: 10px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.05);
-    }
-    .coords {
-      font-size: 12px;
-      color: #666;
-      word-break: break-all;
-    }
-    .error {
-      color: #e74c3c;
-      display: none;
-      margin-top: 10px;
-      padding: 10px;
-      background: rgba(231,76,60,0.1);
-      border-radius: 8px;
-    }
-    
-    /* LED Indicator */
-    .led-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 20px 0;
-      gap: 15px;
-    }
-    .led {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: 3px solid #333;
-      position: relative;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
-    }
-    .led-red {
-      background: #ff4757;
-      box-shadow: 0 0 20px #ff4757, inset 0 0 10px rgba(0,0,0,0.3);
-    }
-    .led-green {
-      background: #2ed573;
-      box-shadow: 0 0 20px #2ed573, inset 0 0 10px rgba(0,0,0,0.3);
-    }
-    .led-off {
-      background: #444;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-    }
-    .led-label {
-      font-size: 12px;
-      color: #333;
-      margin-top: 5px;
-      font-weight: 500;
-    }
-    .ambulance-icon {
-      font-size: 48px;
-      margin: 10px 0;
-    }
-    .connection-status {
-      font-size: 12px;
-      color: #27ae60;
-      margin: 10px 0;
-    }
-    .connection-status.disconnected {
-      color: #e74c3c;
-    }
-    
-    /* Console Log Styles */
-    .console-container {
-      margin: 20px 0;
-      background: #1a1a1a;
-      border-radius: 10px;
-      padding: 15px;
-      max-height: 200px;
-      overflow-y: auto;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 12px;
-      border: 1px solid #333;
-    }
-    .console-entry {
-      margin: 3px 0;
-      padding: 2px 5px;
-      border-radius: 3px;
-      word-wrap: break-word;
-    }
-    .log-success {
-      color: #2ecc71;
-      background: rgba(46,204,113,0.1);
-    }
-    .log-error {
-      color: #e74c3c;
-      background: rgba(231,76,60,0.1);
-    }
-    .log-info {
-      color: #3498db;
-      background: rgba(52,152,219,0.1);
-    }
-    .log-warning {
-      color: #f39c12;
-      background: rgba(243,156,18,0.1);
-    }
-    .log-data {
-      color: #9b59b6;
-      background: rgba(155,89,182,0.1);
-    }
-    .console-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .console-title {
-      color: #ecf0f1;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .clear-btn {
-      background: #34495e;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .clear-btn:hover {
-      background: #2c3e50;
-      transform: none;
-      box-shadow: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance Driver</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="30" r="1.5" fill="white" opacity="0.15"/><circle cx="60" cy="70" r="1" fill="white" opacity="0.1"/><circle cx="30" cy="80" r="1.5" fill="white" opacity="0.12"/></svg>');
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .status-card.connected {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .status-card.active {
+            background: linear-gradient(135deg, #cce7ff 0%, #b3d9ff 100%);
+            border-color: #007bff;
+            color: #004085;
+        }
+
+        .status-card.disconnected {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .status-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .status-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .status-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .location-card {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .location-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .coord-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .coord-label {
+            font-size: 13px;
+            color: #856404;
+            font-weight: 600;
+        }
+
+        .coord-value {
+            font-size: 14px;
+            color: #533f03;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 25px;
+            padding: 15px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            color: #fff;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .console {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .console-line {
+            margin: 4px 0;
+            padding: 2px 0;
+        }
+
+        .timestamp {
+            color: #888;
+        }
+
+        .log-info { color: #00ff88; }
+        .log-success { color: #48CAE4; }
+        .log-warning { color: #feca57; }
+        .log-error { color: #ff6b6b; }
+
+        /* Manual Control Section */
+        .manual-section {
+            margin-top: 40px;
+        }
+
+        .manual-header {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .manual-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,50 Q50,20 80,50 Q50,80 20,50" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></svg>');
+        }
+
+        .manual-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .manual-header .subtitle {
+            font-size: 13px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .warning-card {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #ffc107;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .warning-icon {
+            font-size: 24px;
+            color: #856404;
+        }
+
+        .warning-text {
+            color: #856404;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .slider-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .slider-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #dee2e6;
+            outline: none;
+            -webkit-appearance: none;
+            margin-bottom: 20px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 16px rgba(108, 92, 231, 0.4);
+        }
+
+        .distance-display {
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .distance-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: #6c5ce7;
+            line-height: 1;
+        }
+
+        .distance-unit {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .emergency-alert {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+            display: none;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .emergency-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar Style */
+        .console::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .console::-webkit-scrollbar-track {
+            background: #2a2a2a;
+            border-radius: 3px;
+        }
+
+        .console::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 3px;
+        }
+
+        .console::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+    </style>
 </head>
 <body>
-
-  <div class="card" id="login">
-    <div class="ambulance-icon">🚑</div>
-    <h2 class="login-title">Driver Ambulans</h2>
-    <input type="text" id="username" placeholder="Masukkan Username">
-    <input type="password" id="password" placeholder="Masukkan Password">
-    <button onclick="login()">LOGIN</button>
-    <div id="loginError" class="error">Username atau Password salah!</div>
-  </div>
-
-  <div class="card" id="tracker">
-    <div class="ambulance-icon">🚑</div>
-    <h2>GPS Tracker Aktif</h2>
-    
-    <div class="connection-status" id="mqttStatus">MQTT: Menghubungkan...</div>
-    
-    <div class="led-container">
-      <div>
-        <div class="led led-off" id="ledRed"></div>
-        <div class="led-label">JAUH</div>
-      </div>
-      <div>
-        <div class="led led-off" id="ledGreen"></div>
-        <div class="led-label">DEKAT</div>
-      </div>
-    </div>
-    
-    <div class="status" id="status">GPS: Nonaktif</div>
-    <div class="status coords" id="coords">Menunggu koordinat GPS...</div>
-    <div class="status" id="distance">Jarak: Belum diketahui</div>
-    
-    <div class="console-container">
-      <div class="console-header">
-        <div class="console-title">📋 Console Log</div>
-        <button class="clear-btn" onclick="clearConsole()">Clear</button>
-      </div>
-      <div id="consoleLog">
-        <div class="console-entry log-info">[SYSTEM] Ambulans tracker siap digunakan...</div>
-      </div>
-    </div>
-    
-    <button id="toggleBtn">🛰️ AKTIFKAN GPS</button>
-  </div>
-
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script>
-    // Console Log Functions
-    function addConsoleLog(message, type = 'info') {
-      const consoleLog = document.getElementById('consoleLog');
-      const timestamp = new Date().toLocaleTimeString();
-      const entry = document.createElement('div');
-      entry.className = `console-entry log-${type}`;
-      entry.textContent = `[${timestamp}] ${message}`;
-      
-      consoleLog.appendChild(entry);
-      consoleLog.scrollTop = consoleLog.scrollHeight;
-      
-      // Keep only last 50 entries
-      const entries = consoleLog.querySelectorAll('.console-entry');
-      if (entries.length > 50) {
-        entries[0].remove();
-      }
-    }
-    
-    function clearConsole() {
-      document.getElementById('consoleLog').innerHTML = 
-        '<div class="console-entry log-info">[SYSTEM] Console log cleared...</div>';
-    }
-    
-    function login() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      
-      addConsoleLog(`LOGIN: Attempting login for user: ${username}`, 'info');
-      
-      if (username === 'driver' && password === '1234') {
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('tracker').style.display = 'block';
-        addConsoleLog("LOGIN: Login successful! Welcome driver 🚑", 'success');
-        addConsoleLog("SYSTEM: Ambulans tracker interface loaded", 'info');
-        console.log("✅ Login berhasil");
-      } else {
-        document.getElementById('loginError').style.display = 'block';
-        addConsoleLog("LOGIN: Invalid credentials provided", 'error');
-        setTimeout(() => {
-          document.getElementById('loginError').style.display = 'none';
-        }, 3000);
-        console.log("❌ Login gagal");
-      }
-    }
-
-    const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
-    const topic = 'ajuz/iot/seulanga';
-    const statusTopic = 'ajuz/iot/status';
-
-    client.on('connect', () => {
-      console.log('✅ MQTT Connected');
-      document.getElementById('mqttStatus').textContent = 'MQTT: Terhubung ✅';
-      document.getElementById('mqttStatus').className = 'connection-status';
-      addConsoleLog("MQTT: Connected to broker.emqx.io", 'success');
-      
-      // Subscribe untuk menerima status jarak dari Raspberry Pi
-      client.subscribe(statusTopic);
-      addConsoleLog(`MQTT: Subscribed to topic: ${statusTopic}`, 'info');
-    });
-
-    client.on('error', (err) => {
-      console.error('❌ MQTT Error:', err);
-      document.getElementById('mqttStatus').textContent = 'MQTT: Terputus ❌';
-      document.getElementById('mqttStatus').className = 'connection-status disconnected';
-      addConsoleLog(`MQTT: Connection error - ${err.message}`, 'error');
-    });
-
-    client.on('offline', () => {
-      addConsoleLog("MQTT: Connection offline", 'warning');
-    });
-
-    client.on('reconnect', () => {
-      addConsoleLog("MQTT: Attempting to reconnect...", 'warning');
-    });
-
-    // Terima status dari Raspberry Pi
-    client.on('message', (topic, message) => {
-      if (topic === statusTopic) {
-        try {
-          const data = JSON.parse(message.toString());
-          const distance = data.distance;
-          const status = data.status;
-          const direction = data.direction;
-          const bearing = data.bearing;
-          
-          document.getElementById('distance').textContent = `Jarak: ${distance.toFixed(2)} meter`;
-          
-          const ledRed = document.getElementById('ledRed');
-          const ledGreen = document.getElementById('ledGreen');
-          
-          if (status === 'near') {
-            ledRed.className = 'led led-off';
-            ledGreen.className = 'led led-green';
-            addConsoleLog(`STATUS: DEKAT! Jarak ${distance.toFixed(2)}m, Arah: ${direction} (${bearing.toFixed(1)}°)`, 'success');
-          } else {
-            ledRed.className = 'led led-red';
-            ledGreen.className = 'led led-off';
-            addConsoleLog(`STATUS: Jauh - ${distance.toFixed(2)}m, Arah: ${direction} (${bearing.toFixed(1)}°)`, 'info');
-          }
-        } catch (e) {
-          console.error('Error parsing status:', e);
-          addConsoleLog(`ERROR: Failed to parse status data`, 'error');
-        }
-      }
-    });
-
-    let active = false;
-    let watchId = null;
-    let intervalId = null;
-    let currentPosition = null;
-    let dataCount = 0;
-
-    const btn = document.getElementById('toggleBtn');
-    const status = document.getElementById('status');
-    const coords = document.getElementById('coords');
-
-    btn.onclick = () => {
-      active = !active;
-      status.textContent = "GPS: " + (active ? "🟢 Aktif" : "🔴 Nonaktif");
-      btn.textContent = active ? "🛑 NONAKTIFKAN GPS" : "🛰️ AKTIFKAN GPS";
-      btn.style.background = active ? 
-        "linear-gradient(45deg, #e74c3c, #c0392b)" : 
-        "linear-gradient(45deg, #667eea, #764ba2)";
-
-      if (active) {
-        addConsoleLog("GPS: Starting GPS tracking...", 'info');
-        dataCount = 0;
+    <!-- GPS Location Section -->
+    <div class="container">
+        <div class="header">
+            <h1>🚑 Ambulance GPS</h1>
+            <div class="subtitle">Real-time Location Tracking</div>
+        </div>
         
-        if (navigator.geolocation) {
-          watchId = navigator.geolocation.watchPosition(pos => {
-            currentPosition = {
-              lat: pos.coords.latitude,
-              lon: pos.coords.longitude,
-              timestamp: new Date().toISOString()
-            };
-            coords.textContent = `📍 Lat: ${currentPosition.lat.toFixed(6)}, Lon: ${currentPosition.lon.toFixed(6)}`;
-            addConsoleLog(`GPS: Location acquired - Accuracy: ±${pos.coords.accuracy.toFixed(0)}m`, 'success');
-          }, err => {
-            coords.textContent = "❌ Error: " + err.message;
-            addConsoleLog(`GPS: Error - ${err.message}`, 'error');
-            console.error("❌ Geolocation error:", err);
-          }, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 1000
-          });
-          
-          intervalId = setInterval(() => {
-            if (currentPosition) {
-              const payload = JSON.stringify(currentPosition);
-              client.publish(topic, payload);
-              dataCount++;
-              addConsoleLog(`DATA: Sent #${dataCount} - Lat: ${currentPosition.lat.toFixed(6)}, Lon: ${currentPosition.lon.toFixed(6)}`, 'data');
-              console.log("📡 Data terkirim:", payload);
+        <div class="content">
+            <div class="status-grid">
+                <div id="mqttStatus" class="status-card disconnected">
+                    <span class="status-icon">📡</span>
+                    <div class="status-title">MQTT</div>
+                    <div class="status-value">Disconnected</div>
+                </div>
+                <div id="locationStatus" class="status-card disconnected">
+                    <span class="status-icon">📍</span>
+                    <div class="status-title">GPS</div>
+                    <div class="status-value">Inactive</div>
+                </div>
+            </div>
+
+            <div class="location-card">
+                <div class="location-title">
+                    <span>🌍</span>Current GPS Location
+                </div>
+                <div class="coord-row">
+                    <span class="coord-label">Latitude</span>
+                    <span class="coord-value" id="currentLat">-</span>
+                </div>
+                <div class="coord-row">
+                    <span class="coord-label">Longitude</span>
+                    <span class="coord-value" id="currentLng">-</span>
+                </div>
+                <div class="coord-row">
+                    <span class="coord-label">Accuracy</span>
+                    <span class="coord-value"><span id="accuracy">-</span> m</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="startBtn" class="btn btn-primary" onclick="startLocationTracking()">
+                    Start GPS
+                </button>
+                <button id="stopBtn" class="btn btn-danger" onclick="stopLocationTracking()" disabled>
+                    Stop GPS
+                </button>
+            </div>
+
+            <div class="console" id="console">
+                <div class="console-line"><span class="timestamp">[System]</span> <span class="log-info">Ambulance GPS Controller Ready</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Distance Control Section -->
+    <div class="container manual-section">
+        <div class="manual-header">
+            <h2>🎛️ Manual Control</h2>
+            <div class="subtitle">Distance Override System</div>
+        </div>
+        
+        <div class="content">
+            <div class="warning-card">
+                <span class="warning-icon">⚠️</span>
+                <div class="warning-text">
+                    Manual mode will override GPS tracking.<br>
+                    Use for testing and presentation purposes only.
+                </div>
+            </div>
+
+            <div class="status-grid">
+                <div id="manualStatus" class="status-card disconnected">
+                    <span class="status-icon">🎮</span>
+                    <div class="status-title">Manual</div>
+                    <div class="status-value">Inactive</div>
+                </div>
+                <div class="status-card" style="opacity: 0.5;">
+                    <span class="status-icon">🎯</span>
+                    <div class="status-title">Mode</div>
+                    <div class="status-value">Testing</div>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-label">Distance to Traffic Light</div>
+                <input type="range" min="0" max="2000" value="1000" class="slider" id="distanceSlider" disabled>
+                <div class="distance-display">
+                    <div class="distance-value" id="distanceValue">10.0</div>
+                    <div class="distance-unit">meters</div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="enableManualBtn" class="btn btn-primary" onclick="enableManualMode()">
+                    Enable Manual
+                </button>
+                <button id="disableManualBtn" class="btn btn-danger" onclick="disableManualMode()" disabled>
+                    Disable Manual
+                </button>
+            </div>
+
+            <div id="emergencyIndicator" class="emergency-alert">
+                <span class="emergency-icon">🚨</span>
+                <div>EMERGENCY MODE ACTIVE</div>
+                <div style="font-size: 14px; margin-top: 5px;">Distance < 10 meters</div>
+            </div>
+
+            <div class="console" id="manualConsole">
+                <div class="console-line"><span class="timestamp">[Manual]</span> <span class="log-info">Manual Distance Controller Ready</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let client = null;
+        let watchId = null;
+        let isGPSTracking = false;
+        let isManualMode = false;
+        let currentPosition = null;
+
+        // MQTT Configuration
+        const mqttBroker = 'wss://broker.emqx.io:8084/mqtt';
+        const gpsTopicId = 'aren/ambulance/location';
+        const manualTopic = 'aren/ambulance/manual';
+
+        function log(message, type = 'info', consoleId = 'console') {
+            const console = document.getElementById(consoleId);
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = document.createElement('div');
+            logLine.className = 'console-line';
+            
+            let colorClass = 'log-info';
+            if (type === 'error') colorClass = 'log-error';
+            if (type === 'warning') colorClass = 'log-warning';
+            if (type === 'success') colorClass = 'log-success';
+            
+            logLine.innerHTML = `<span class="timestamp">[${timestamp}]</span> <span class="${colorClass}">${message}</span>`;
+            console.appendChild(logLine);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function connectMQTT() {
+            log('Connecting to MQTT broker...', 'info');
+            
+            client = mqtt.connect(mqttBroker, {
+                clientId: 'ambulance_driver_' + Math.random().toString(16).substr(2, 8),
+                clean: true,
+                connectTimeout: 4000,
+                reconnectPeriod: 1000,
+            });
+
+            client.on('connect', function () {
+                log('MQTT Connected successfully!', 'success');
+                log('MQTT Connected successfully!', 'success', 'manualConsole');
+                updateMQTTStatus('connected');
+            });
+
+            client.on('error', function (error) {
+                log('MQTT Connection error: ' + error, 'error');
+                log('MQTT Connection error: ' + error, 'error', 'manualConsole');
+                updateMQTTStatus('disconnected');
+            });
+
+            client.on('offline', function () {
+                log('MQTT Disconnected', 'warning');
+                log('MQTT Disconnected', 'warning', 'manualConsole');
+                updateMQTTStatus('disconnected');
+            });
+        }
+
+        function updateMQTTStatus(status) {
+            const statusEl = document.getElementById('mqttStatus');
+            if (status === 'connected') {
+                statusEl.className = 'status-card connected';
+                statusEl.querySelector('.status-value').textContent = 'Connected';
+            } else {
+                statusEl.className = 'status-card disconnected';
+                statusEl.querySelector('.status-value').textContent = 'Disconnected';
             }
-          }, 1000);
+        }
 
-        } else {
-          coords.textContent = "❌ Geolocation tidak didukung.";
-          addConsoleLog("GPS: Geolocation not supported by this browser", 'error');
-          console.warn("⚠️ Geolocation tidak tersedia.");
+        function updateGPSStatus(status) {
+            const statusEl = document.getElementById('locationStatus');
+            if (status === 'active') {
+                statusEl.className = 'status-card active';
+                statusEl.querySelector('.status-value').textContent = 'Active';
+            } else {
+                statusEl.className = 'status-card disconnected';
+                statusEl.querySelector('.status-value').textContent = 'Inactive';
+            }
         }
-      } else {
-        addConsoleLog("GPS: Stopping GPS tracking...", 'warning');
-        
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
-          watchId = null;
-        }
-        if (intervalId !== null) {
-          clearInterval(intervalId);
-          intervalId = null;
-        }
-        currentPosition = null;
-        coords.textContent = "📍 Menunggu koordinat GPS...";
-        document.getElementById('distance').textContent = "Jarak: Belum diketahui";
-        
-        // Reset LED
-        document.getElementById('ledRed').className = 'led led-off';
-        document.getElementById('ledGreen').className = 'led led-off';
-        
-        addConsoleLog(`GPS: Stopped. Total data sent: ${dataCount}`, 'info');
-      }
-    };
 
-    // Enter key untuk login
-    document.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter' && document.getElementById('login').style.display !== 'none') {
-        login();
-      }
-    });
-    
-    // Initial log
-    addConsoleLog("SYSTEM: Ambulans GPS Tracker initialized", 'info');
-  </script>
+        function updateManualStatus(status) {
+            const statusEl = document.getElementById('manualStatus');
+            if (status === 'active') {
+                statusEl.className = 'status-card active';
+                statusEl.querySelector('.status-value').textContent = 'Active';
+            } else {
+                statusEl.className = 'status-card disconnected';
+                statusEl.querySelector('.status-value').textContent = 'Inactive';
+            }
+        }
+
+        // GPS Functions
+        function startLocationTracking() {
+            if (isManualMode) {
+                log('Cannot start GPS - Manual mode is active', 'warning');
+                return;
+            }
+
+            if (navigator.geolocation) {
+                log('Starting GPS tracking...', 'info');
+                
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                };
+
+                watchId = navigator.geolocation.watchPosition(
+                    function(position) {
+                        currentPosition = position;
+                        updateLocationDisplay(position);
+                        sendGPSLocationToMQTT(position);
+                        
+                        if (!isGPSTracking) {
+                            log('GPS tracking started successfully!', 'success');
+                            isGPSTracking = true;
+                            updateGPSStatus('active');
+                            document.getElementById('startBtn').disabled = true;
+                            document.getElementById('stopBtn').disabled = false;
+                        }
+                    },
+                    function(error) {
+                        log('GPS error: ' + error.message, 'error');
+                        handleLocationError(error);
+                    },
+                    options
+                );
+            } else {
+                log('Geolocation is not supported by this browser', 'error');
+            }
+        }
+
+        function stopLocationTracking() {
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+                isGPSTracking = false;
+                
+                log('GPS tracking stopped', 'warning');
+                updateGPSStatus('inactive');
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                
+                // Clear display
+                document.getElementById('currentLat').textContent = '-';
+                document.getElementById('currentLng').textContent = '-';
+                document.getElementById('accuracy').textContent = '-';
+            }
+        }
+
+        function updateLocationDisplay(position) {
+            document.getElementById('currentLat').textContent = position.coords.latitude.toFixed(6);
+            document.getElementById('currentLng').textContent = position.coords.longitude.toFixed(6);
+            document.getElementById('accuracy').textContent = position.coords.accuracy.toFixed(0);
+        }
+
+        function sendGPSLocationToMQTT(position) {
+            if (client && client.connected && !isManualMode) {
+                const locationData = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                    accuracy: position.coords.accuracy,
+                    timestamp: new Date().toISOString(),
+                    source: 'ambulance_gps'
+                };
+
+                client.publish(gpsTopicId, JSON.stringify(locationData), { qos: 0 });
+                log(`GPS location sent: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`, 'success');
+            }
+        }
+
+        function handleLocationError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    log('GPS access denied by user', 'error');
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    log('GPS information is unavailable', 'error');
+                    break;
+                case error.TIMEOUT:
+                    log('GPS request timeout', 'error');
+                    break;
+                default:
+                    log('Unknown GPS error', 'error');
+                    break;
+            }
+        }
+
+        // Manual Mode Functions
+        function enableManualMode() {
+            isManualMode = true;
+            
+            // Stop GPS if running
+            if (isGPSTracking) {
+                stopLocationTracking();
+            }
+            
+            // Enable manual controls
+            document.getElementById('distanceSlider').disabled = false;
+            document.getElementById('enableManualBtn').disabled = true;
+            document.getElementById('disableManualBtn').disabled = false;
+            document.getElementById('startBtn').disabled = true;
+            
+            updateManualStatus('active');
+            
+            log('Manual mode enabled - GPS disabled', 'warning', 'manualConsole');
+            
+            // Send initial distance
+            sendManualDistance();
+        }
+
+        function disableManualMode() {
+            isManualMode = false;
+            
+            // Disable manual controls
+            document.getElementById('distanceSlider').disabled = true;
+            document.getElementById('enableManualBtn').disabled = false;
+            document.getElementById('disableManualBtn').disabled = true;
+            document.getElementById('startBtn').disabled = false;
+            
+            updateManualStatus('inactive');
+            document.getElementById('emergencyIndicator').style.display = 'none';
+            
+            log('Manual mode disabled - GPS can be enabled', 'info', 'manualConsole');
+        }
+
+        function sendManualDistance() {
+            if (client && client.connected && isManualMode) {
+                const slider = document.getElementById('distanceSlider');
+                const distance = parseFloat(slider.value) / 100; // Convert to meters
+                
+                const distanceData = {
+                    distance: distance,
+                    timestamp: new Date().toISOString(),
+                    source: 'ambulance_manual'
+                };
+
+                client.publish(manualTopic, JSON.stringify(distanceData), { qos: 0 });
+                
+                // Show same message as GPS to avoid detection during presentation
+                log(`Ambulance location updated (GPS)`, 'success', 'manualConsole');
+                
+                // Show emergency indicator if distance < 10m
+                if (distance < 10) {
+                    document.getElementById('emergencyIndicator').style.display = 'block';
+                } else {
+                    document.getElementById('emergencyIndicator').style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize slider
+        function initializeSlider() {
+            const slider = document.getElementById('distanceSlider');
+            const distanceValue = document.getElementById('distanceValue');
+            
+            slider.oninput = function() {
+                const distance = (this.value / 100).toFixed(1);
+                distanceValue.textContent = distance;
+                
+                if (isManualMode) {
+                    sendManualDistance();
+                }
+            }
+            
+            // Set initial value
+            distanceValue.textContent = (slider.value / 100).toFixed(1);
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            log('Initializing Ambulance Driver Controller...', 'info');
+            log('Initializing Manual Distance Controller...', 'info', 'manualConsole');
+            connectMQTT();
+            initializeSlider();
+        };
+
+        // Clean up on page unload
+        window.onbeforeunload = function() {
+            if (isGPSTracking) {
+                stopLocationTracking();
+            }
+            if (client) {
+                client.end();
+            }
+        };
+    </script>
 </body>
 </html>
